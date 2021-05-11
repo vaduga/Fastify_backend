@@ -1,10 +1,12 @@
 // Require the framework and instantiate it
-import f from "fastify";
-import { routes } from "./routes/router.js";
 
-const fastify = f({
+require("dotenv").config();
+
+const fastify = require("fastify")({
   logger: true,
 });
+
+const routes = require("./routes/router.js");
 
 fastify.register(routes);
 

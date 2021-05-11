@@ -1,24 +1,19 @@
-import Sequelize from "sequelize";
-import * as fs from "fs";
+const Sequelize = require("sequelize");
+const fs = require("fs");
 
 function SaveFromSequelize() {
-  const sequelize = new Sequelize(
-    "postgres://trtmlpgshwofaq:92b2ea3d96b853d3423efbc7ba49b94f5c9dee4200e8c325251fa30437a6f4fa@ec2-52-19-164-214.eu-west-1.compute.amazonaws.com:5432/daq7bh988dhuup",
-    {
-      dialect: "postgres",
-      dialectOptions: {
-        ssl: { rejectUnauthorized: false },
-      },
-    }
-  );
-
-  new URL("./local", import.meta.url);
+  const sequelize = new Sequelize(process.env.DATABASE_URI, {
+    dialect: "postgres",
+    dialectOptions: {
+      ssl: { rejectUnauthorized: false },
+    },
+  });
 
   // specify the path to the file, and create a buffer with characters we want to write
-  let path = "/home/vaduga/Documents/pic.jpeg";
+  let filename = "/home/vaduga/Documents/pic.jpeg";
 
   // open the file in writing mode, adding a callback function where we do the actual writing
-  fs.open(path, "w", async function (err, fd) {
+  fs.open(filename, "w", async function (err, fd) {
     if (err) {
       throw "could not open file: " + err;
     }
@@ -34,4 +29,4 @@ function SaveFromSequelize() {
   });
 }
 
-export { SaveFromSequelize };
+module.exports = SaveFromSequelize;
