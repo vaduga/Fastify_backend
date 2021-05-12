@@ -1,13 +1,20 @@
-const qs = require("qs");
 const path = require("path");
-const SaveFromSequelize = require("../controllers/seq_save.js");
 
-const multer = require("fastify-multer");
-
-const upload = multer({ dest: "./uploads" });
+const { upload, multer } = require("../config/multer.config");
+const fileWorker = require("../controllers/file.controller.js");
 
 async function routes(fastify, options) {
   fastify.register(multer.contentParser);
+
+  fastify.post(
+    "/api/file/upload",
+    { preHandler: upload.single("file") },
+    fileWorker.uploadFile
+  );
+
+  fastify.get("/api/file/list", fileWorker.listAllFiles);
+
+  fastify.get("/api/file/:id", fileWorker.downloadFile); /// :id - параметр указывается в адресной строке в браузере
 
   fastify.get("/client/read", async (request, reply) => {
     reply.type("text/html").send(
@@ -36,10 +43,10 @@ async function routes(fastify, options) {
     "/client/saveToFile",
     { preHandler: upload.single("avatar") },
     (request, reply) => {
-      let dir = path.join(__dirname, "..", "/uploads");
+      let dir = path.join(__dirname, "/uploads");
 
       reply.type("text/html").send(`
-        <p>You've succesfully saved pokemon "${request.body.name}" to file: ${dir}/${request.file.filename} </p>
+        <p>You've succesfully saved pokemon "${request.body.name}" to file: ${dir}/${request.file.originalname} </p>
         <a href="/client/read"><button>Back</button></a>
         `);
     }
@@ -49,11 +56,13 @@ async function routes(fastify, options) {
     "/client/saveToPG",
     { preHandler: upload.single("avatar") },
     async (request, reply) => {
+      const SQL_SaveFromPostgres = require("../controllers/sql_save.js");
+
       reply.type("text/html").send(`
         <p>You've sent ${request.body.name} to PostgresQL database!</p>
         <a href="/client/read"><button>Back</button></a>
 
-        <button onclick=${SaveFromSequelize()}>Demo save from Postgres with Sequelize</button></a>
+        <button onclick=${SQL_SaveFromPostgres()}>Demo save from Postgres with Sequelize</button></a>
         `);
     }
   );

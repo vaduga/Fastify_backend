@@ -6,14 +6,20 @@ const fastify = require("fastify")({
   logger: true,
 });
 
-const routes = require("./routes/router.js");
+// подключаем БД
+const db = require("./config/db.config.js");
 
-fastify.register(routes);
+// синхронизируем Модели с Таблицами БД. force: true сотрет все записи в тех таблицах, к которым мы определили модели)
+db.sequelize.sync({ force: false }).then(() => {
+  console.log("Drop and Resync with { force: true }");
+});
 
-// Declare a route
+// Declare routes
+
+fastify.register(require("./routes/router.js"));
 
 // Run the server!
-fastify.listen(3000, function (err, address) {
+fastify.listen(process.env.PORT, function (err, address) {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
