@@ -3,12 +3,14 @@ const path = require("path");
 const { upload, multer } = require("../config/multer.config");
 const fileWorker = require("../controllers/file.controller.js");
 
+const SQL_SaveFromPostgres = require("../controllers/sql_save.js");
+
 async function routes(fastify, options) {
   fastify.register(multer.contentParser);
 
   fastify.post(
     "/api/file/upload",
-    { preHandler: upload.single("file") },
+    { preHandler: upload.single("avatar") },
     fileWorker.uploadFile
   );
 
@@ -16,60 +18,47 @@ async function routes(fastify, options) {
 
   fastify.get("/api/file/:id", fileWorker.downloadFile); /// :id - параметр указывается в адресной строке в браузере
 
-  fastify.get("/client/read", async (request, reply) => {
+  fastify.get("/api/sql_demo", SQL_SaveFromPostgres); /// :id - параметр указывается в адресной строке в браузере
+
+  fastify.get("/api/main", async (request, reply) => {
     reply.type("text/html").send(
       `
         <h1>Save pockemon</h1>
         
         <form method="POST" enctype="multipart/form-data"> 
     
-        <input type="text" name="name" placeholder="pockemon name"/>
+        <input type="text" name="pockemon" placeholder="pockemon name"/>
         <br><br>
 
-        <label for="file">Choose file to upload</label>
-        <input id="file" type="file" name="avatar">
+        <label for="avatar">Choose file to upload</label>
+        <input id="avatar" type="file" name="avatar">
         
         <br><br><br>
-        <button formaction="/client/saveToPG" type="submit">save to PostgresQL</button>
+        <button formaction="/api/file/upload" type="submit">save to PostgresQL</button>
         <br><br>
-        <button formaction="/client/saveToFile" type="submit">save to File</button>
+        <button formaction="/api/file/save" type="submit">save to File</button>
         
         </form>       
+        <a href="/api/sql_demo"><button>Save demo file from Postgres (sql)</button></a>
+        
         `
     );
   });
 
   fastify.post(
-    "/client/saveToFile",
-    { preHandler: upload.single("avatar") },
+    "/api/file/save",
+    { preHandler: upload.single("avatar") }, //TODO не загружает файл на диск
     (request, reply) => {
-      let dir = path.join(__dirname, "/uploads");
+      let dir = path.join(__dirname, "..", "/uploads");
 
       reply.type("text/html").send(`
-        <p>You've succesfully saved pokemon "${request.body.name}" to file: ${dir}/${request.file.originalname} </p>
-        <a href="/client/read"><button>Back</button></a>
+        <p>You've saved succesfully saved pokemon "${request.body.pockemon}" to file: ${dir}/${request.file.originalname} </p>
+        <a href="/api/main"><button>Back</button></a>
         `);
     }
   );
 
-  fastify.post(
-    "/client/saveToPG",
-    { preHandler: upload.single("avatar") },
-    async (request, reply) => {
-      const SQL_SaveFromPostgres = require("../controllers/sql_save.js");
-
-      reply.type("text/html").send(`
-        <p>You've sent ${request.body.name} to PostgresQL database!</p>
-        <a href="/client/read"><button>Back</button></a>
-
-        <button onclick=${SQL_SaveFromPostgres()}>Demo save from Postgres with Sequelize</button></a>
-        `);
-    }
-  );
-
-  //${SaveFromSequelize}
-
-  fastify.get("/", async (request, reply) => reply.redirect("/client/read"));
+  fastify.get("/", async (request, reply) => reply.redirect("/api/main"));
 }
 
 module.exports = routes;

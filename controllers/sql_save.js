@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const db = require("../config/db.config");
 
-function SaveFromSequelize() {
+function SaveFromSequelize(request, reply) {
   // specify the path to the file, and create a buffer with characters we want to write
   let filename = require("path").join(
     __dirname,
@@ -26,6 +26,11 @@ function SaveFromSequelize() {
       if (err) throw "error writing file: " + err;
       fs.close(fd, function () {
         console.log("wrote the file successfully");
+
+        reply.type("text/html").send(`
+        <p>Some demo file requested with SQL-query and save to: ${filename} </p>
+        <a href="/api/main"><button>Back</button></a>
+        `);
       });
     });
   });
