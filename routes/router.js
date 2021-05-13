@@ -43,42 +43,59 @@ async function routes(fastify, options) {
   fastify.get("/api/main", async (request, reply) => {
     reply.type("text/html").send(
       `
-        <h1>Save pockemon</h1>
-        <a href="/api/file/list">List all files from Postgres</a>
-<br><br>Upload new:
-        <form method="POST" enctype="multipart/form-data"> 
-    
-        <input type="text" name="pockemon" placeholder="pockemon name"/>
-        <br><br>
+      <!DOCTYPE html>
+      <html>
+          <head>
+              <meta charset="utf-8">
+          </head>
+          <body>
+          <h1>Save pockemon</h1>
+          <a href="/api/file/list">List all files from Postgres</a>
+  <br><br>Upload new:
+          <form method="POST" enctype="multipart/form-data"> 
+      
+          <input type="text" name="pockemon" placeholder="pockemon name"/>
+          <br><br>
+  
+          <label for="avatar">Choose file to upload</label>
+          <input id="avatar" type="file" name="avatar">
+          
+          <br><br><br>
+          <button formaction="/api/file/upload" type="submit">sync to PostgresQL via Sequelize model</button>
+          <br><br>
+          <button formaction="/api/file/save" type="submit">save to local /uploads folder</button>
+          
+          </form>       
+          
+  
+          Download: 
+          <br><br>
+          Pic number <1>
+          
+          <a id="ref" href="/api/file/1">Download file by ID from Postgres with Sequelize-model</a>
+          
+          
+  <br><br>
+  <a href="/api/sql_demo"><button>Save DEMO file (not yours) from Postgres with sql-query</button></a>
+  
+          <br><br><br>
+          <h3>Задание: </h3>
+          <div>
+          Сделать UI (input, например radiobutton) для выбора номера картинки, которую загружаем. Решить двумя путями:<br>
+          1. Попроще. Через обращение к существующему API-route ("api/file/:id), который получает номер из адреса. Надо просто динамически менять этот номер, 
+          в зависимости от выбора UI.
+  
+          <br>2. Сделать еще одну форму и еще один API-route для получения картинок вида "api/fileById".
+          <br>Нужно чтобы route получал все данные как multipart/form-data, пример есть выше в форме для загрузки.
+          </div>
+          
 
-        <label for="avatar">Choose file to upload</label>
-        <input id="avatar" type="file" name="avatar">
-        
-        <br><br><br>
-        <button formaction="/api/file/upload" type="submit">sync to PostgresQL via Sequelize model</button>
-        <br><br>
-        <button formaction="/api/file/save" type="submit">save to local /uploads folder</button>
-        
-        </form>       
-        
 
-        Download: 
-        <br><br>
-        Pic number
-        <input id="picInput" placeholder="1">
-        <a id="ref" href="/api/file/1">Download file by ID from Postgres with Sequelize-model</a>
-        </form>
-        
-<br><br>
-<a href="/api/sql_demo"><button>Save DEMO file (not yours) from Postgres with sql-query</button></a>
 
-        <script>
-        let input = document.querySelector("#picInput")
-        let ref = document.querySelector("#ref")
-        input.onchange = ()=> ref.href = "/api/file/"+input.value
+          </body>
+      </html>
 
-        </script>
-        `
+       `
     );
   });
 
