@@ -1,6 +1,8 @@
-// Require the framework and instantiate it
+// внедряем переменные окружения (environment variables) из файла .env специальной библиотекой
 
 require("dotenv").config();
+
+// Require the framework and instantiate it
 
 const fastify = require("fastify")({
   logger: true,

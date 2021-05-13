@@ -26,6 +26,7 @@ exports.listAllFiles = (request, reply) => {
 };
 
 exports.downloadFile = (request, reply) => {
+  //// достаем файл из Postgres с помощью модели Sequalize вместо чистого sql-запроса
   File.findByPk(request.params.id)
     .then((file) => {
       let fileContents = Buffer.from(file.data, "base64");
