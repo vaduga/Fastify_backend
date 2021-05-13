@@ -1,6 +1,10 @@
 const path = require("path");
 
-const { upload, multer } = require("../config/multer.config");
+const {
+  disk_upload,
+  memory_upload,
+  multer,
+} = require("../config/multer.config");
 const fileWorker = require("../controllers/file.controller.js");
 
 const SQL_SaveFromPostgres = require("../controllers/sql_save.js");
@@ -10,15 +14,15 @@ async function routes(fastify, options) {
 
   fastify.post(
     "/api/file/upload",
-    { preHandler: upload.single("avatar") },
-    fileWorker.uploadFile
+    { preHandler: memory_upload.single("avatar") },
+    fileWorker.uploadToDB
   );
 
   fastify.get("/api/file/list", fileWorker.listAllFiles);
 
-  fastify.get("/api/file/:id", fileWorker.downloadFile); /// :id - параметр указывается в адресной строке в браузере
+  fastify.get("/api/file/:id", fileWorker.downloadFile); /// :id - подставить параметр (номер) в адресной строке в браузере
 
-  fastify.get("/api/sql_demo", SQL_SaveFromPostgres); /// :id - параметр указывается в адресной строке в браузере
+  fastify.get("/api/sql_demo", SQL_SaveFromPostgres);
 
   fastify.get("/api/main", async (request, reply) => {
     reply.type("text/html").send(
@@ -34,20 +38,33 @@ async function routes(fastify, options) {
         <input id="avatar" type="file" name="avatar">
         
         <br><br><br>
-        <button formaction="/api/file/upload" type="submit">save to PostgresQL</button>
+        <button formaction="/api/file/upload" type="submit">send to PostgresQL</button>
         <br><br>
-        <button formaction="/api/file/save" type="submit">save to File</button>
+        <button formaction="/api/file/save" type="submit">save to /uploads</button>
         
         </form>       
-        <a href="/api/sql_demo"><button>Save demo file from Postgres (sql)</button></a>
         
+        
+        <input id="picInput" placeholder="1">
+        <a id="ref" href="><button>Download file from Postgres with Sequelize-model</button></a>
+        </form>
+        
+<br><br>
+<a href="/api/sql_demo"><button>Save demo file from Postgres with sql-query</button></a>
+
+        <script>
+        let input = document.querySelector("#picInput")
+        let ref = document.querySelector("#ref")
+        input.onchange = ()=> ref.href = "/api/file/"+input.value
+
+        </script>
         `
     );
   });
 
   fastify.post(
     "/api/file/save",
-    { preHandler: upload.single("avatar") }, //TODO не загружает файл на диск
+    { preHandler: disk_upload.single("avatar") },
     (request, reply) => {
       let dir = path.join(__dirname, "..", "/uploads");
 

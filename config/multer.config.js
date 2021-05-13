@@ -1,6 +1,7 @@
 const multer = require("fastify-multer");
 const storage = multer.memoryStorage();
 
-const upload = multer({ dest: "./uploads", storage: storage });
+const disk_upload = multer({ dest: "./uploads" });
+const memory_upload = multer({ storage: storage });
 
-module.exports = { upload, multer };
+module.exports = { disk_upload, memory_upload, multer };
