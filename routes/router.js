@@ -1,5 +1,4 @@
 const path = require("path");
-const fs = require("fs");
 
 const {
   disk_upload,
@@ -25,10 +24,8 @@ async function routes(fastify, options) {
     (request, reply) => {
       let dir = path.join(__dirname, "..", "/uploads");
 
-      // create uploads/sql directory
-
       reply.type("text/html").send(`
-        <p>You've saved succesfully saved pokemon "${request.body.pockemon}" to file: ${dir}/${request.file.originalname} </p>
+        <p>You've saved succesfully saved pokemon "${request.body.pockemon}" to file: ${dir}/${reply.request.file.filename} </p>
         <a href="/api/main"><button>Back</button></a>
         `);
     }
