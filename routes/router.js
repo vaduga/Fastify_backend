@@ -1,4 +1,5 @@
 const path = require("path");
+const fastifyStatic = require("fastify-static");
 
 const {
   disk_upload,
@@ -37,20 +38,32 @@ async function routes(fastify, options) {
 
   fastify.get("/api/sql_demo", SQL_SaveFromPostgres);
 
-  fastify.register(require('fastify-static'), {
-    root: path.join(__dirname,'..','uploads'),
-    prefix: '/uploads/', // optional: default '/'
-    list: true
-  })
+  // first static plugin
+  fastify.register(fastifyStatic, {
+    root: path.join(__dirname, "..", "client", "build"),
+    prefix: "/client/build/", // optional: default '/'
+    list: true,
+    index: false, // prevent index.html autoload
+  });
+
+  // second static plugin
+  fastify.register(fastifyStatic, {
+    root: path.join(__dirname, "..", "uploads"),
+    prefix: "/uploads/",
+    decorateReply: false, // the reply decorator has been added by the first plugin registration
+    list: true,
+    index: false,
+  });
 
   fastify.get("/api/main", async (request, reply) => {
-     return reply.sendFile('api.html', path.join(__dirname,'..','view'));
-  })
+    return reply.sendFile("api.html", path.join(__dirname, "..", "view"));
+  });
 
   fastify.get("/", async (request, reply) => {
-    return reply.sendFile('index.html',path.join(__dirname,'..','client','public'));
-  }
-  )
-
+    return reply.sendFile(
+      "index.html",
+      path.join(__dirname, "..", "client", "build")
+    );
+  });
 }
 module.exports = routes;
