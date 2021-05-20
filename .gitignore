@@ -1,3 +1,6 @@
 node_modules
 .env
 uploads
+.idea/Fastify_starter.iml
+.idea/modules.xml
+.idea/vcs.xml

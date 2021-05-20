@@ -61,6 +61,7 @@ async function routes(fastify, options) {
 
         Download: 
         <br><br>
+        <form>
         Pic number
         <input id="picInput" placeholder="1">
         <a id="ref" href="/api/file/1">Download file by ID from Postgres with Sequelize-model</a>
