@@ -7,3 +7,9 @@ uploads
 .idea/Fastify_starter.iml
 .idea/modules.xml
 .idea/vcs.xml
+.idea
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
