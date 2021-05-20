@@ -37,50 +37,20 @@ async function routes(fastify, options) {
 
   fastify.get("/api/sql_demo", SQL_SaveFromPostgres);
 
+  fastify.register(require('fastify-static'), {
+    root: path.join(__dirname,'..','uploads'),
+    prefix: '/uploads/', // optional: default '/'
+    list: true
+  })
+
   fastify.get("/api/main", async (request, reply) => {
-    reply.type("text/html").send(
-      `
-        <h1>Save pockemon</h1>
-        <a href="/api/file/list">List all files from Postgres</a>
-<br><br>Upload new:
-        <form method="POST" enctype="multipart/form-data"> 
-    
-        <input type="text" name="pockemon" placeholder="pockemon name"/>
-        <br><br>
+     return reply.sendFile('api.html', path.join(__dirname,'..','view'));
+  })
 
-        <label for="avatar">Choose file to upload</label>
-        <input id="avatar" type="file" name="avatar">
-        
-        <br><br><br>
-        <button formaction="/api/file/upload" type="submit">sync to PostgresQL via Sequelize model</button>
-        <br><br>
-        <button formaction="/api/file/save" type="submit">save to local /uploads folder</button>
-        
-        </form>       
-        
+  fastify.get("/", async (request, reply) => {
+    return reply.sendFile('index.html',path.join(__dirname,'..','client','public'));
+  }
+  )
 
-        Download: 
-        <br><br>
-        <form>
-        Pic number
-        <input id="picInput" placeholder="1">
-        <a id="ref" href="/api/file/1">Download file by ID from Postgres with Sequelize-model</a>
-        </form>
-        
-<br><br>
-<a href="/api/sql_demo"><button>Save DEMO file (not yours) from Postgres with sql-query</button></a>
-
-        <script>
-        let input = document.querySelector("#picInput")
-        let ref = document.querySelector("#ref")
-        input.onchange = ()=> ref.href = "/api/file/"+input.value
-
-        </script>
-        `
-    );
-  });
-
-  fastify.get("/", async (request, reply) => reply.redirect("/api/main"));
 }
-
 module.exports = routes;

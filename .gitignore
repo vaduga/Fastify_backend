@@ -1,4 +1,7 @@
 node_modules
+client/node_modules
+client/build
+client/public
 .env
 uploads
 .idea/Fastify_starter.iml
