@@ -6,3 +6,6 @@ functionality, API:
 - upload file to postgres with sequelize
 - download file from postgres by file id with Sequelize
 - save file from postgres with SQL request
+
+- react deploy static
+- static uploads folder via fastify-static
